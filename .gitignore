@@ -1,1 +1,7 @@
 .commandcode/
+target/
+*.class
+*.jar
+*.war
+*.log
+*.tmp

@@ -1,0 +1,7 @@
+ROLE: [Expertise]
+Instructions: [Purpose]
+CONTEXT: [Background info]
+EXAMPLE: [Sample Examples]
+PARAMETERS: [Constraints]
+OUTPUT: [Format]
+TONE: [Specific instruction]

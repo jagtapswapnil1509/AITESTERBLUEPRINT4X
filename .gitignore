@@ -5,3 +5,5 @@ target/
 *.war
 *.log
 *.tmp
+.config.json
+__pycache__/

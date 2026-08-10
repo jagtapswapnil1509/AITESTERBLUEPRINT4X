@@ -36,9 +36,15 @@ AITESTERBLUEPRINT4X/
 │       ├── mvnw.cmd                         # Maven wrapper (Windows)
 │       └── src/                             # Page Object + TestNG scripts
 ├── Chapter_03_Local_TC_Generator/
-│   ├── src/                                 # Local LLM test case generator (Python/Node)
-│   └── templates/
-│       └── testcase_creator.md              # Structured prompt for local LLM TC generation
+│   ├── app.py                               # Streamlit chat screen — Jira key detection + TC generation
+│   ├── pages/settings.py                    # Settings — Jira creds, LLM provider, Groq key
+│   ├── config_store.py                      # JSON flat-file config persistence (.config.json)
+│   ├── jira_client.py                       # Jira REST API — fetch ticket summary/description/AC
+│   ├── llm_client.py                        # Ollama (gemma3:1b) + Groq fallback with streaming
+│   ├── templates/
+│   │   ├── testcase_creator.md              # Generic test case prompt template
+│   │   └── jira_tc_template.md              # Jira-specific structured TC prompt
+│   └── requirements.txt                     # Python dependencies (streamlit, requests, ollama)
 ├── README.md
 └── .gitignore
 ```
@@ -82,9 +88,21 @@ Covers structured prompt engineering techniques including the **RICE POT** frame
 
 ---
 
-## 📖 Chapter 03 — Local Test Case Generator
+## 📖 Chapter 03 — Local Test Case Generator (Streamlit App)
 
-Scaffold for a local LLM-powered test case generator. Uses structured prompt templates with anti-hallucination guardrails to produce traceable, repeatable test cases from PRDs, SRS documents, JIRA tickets, and other requirement sources — all running on a local LLM (Ollama, LM Studio, etc.).
+Two-screen Streamlit application that turns Jira tickets into test cases using a local LLM:
+
+- **Chat Screen** — ChatGPT-style interface. Type `create test cases for QA-102` and the app fetches the Jira ticket, merges its details into a structured prompt template, and streams generated test cases back.
+- **Settings Screen** — Configure Jira URL/email/API token, choose Ollama (default, `gemma3:1b`) or Groq as fallback, and save Groq API key. All credentials persisted in `.config.json` (gitignored).
+
+**Flow:** User message → Jira key detection → Jira REST API fetch → template merge → Ollama/Groq streaming → rendered test cases.
+
+**Run it:**
+```bash
+cd Chapter_03_Local_TC_Generator
+pip install -r requirements.txt
+streamlit run app.py
+```
 
 ---
 

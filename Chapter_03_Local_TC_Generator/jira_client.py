@@ -26,9 +26,11 @@ class JiraClient:
             "acceptance_criteria": acceptance_criteria,
         }
 
-    def _extract_text(self, doc: dict | None) -> str:
+    def _extract_text(self, doc: dict | str | None) -> str:
         if not doc:
             return ""
+        if isinstance(doc, str):
+            return doc.strip()
         content = doc.get("content", [])
         parts = []
         for block in content:

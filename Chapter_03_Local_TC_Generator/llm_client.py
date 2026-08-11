@@ -32,6 +32,29 @@ class LLMClient:
                 return
         raise RuntimeError("No available LLM provider.")
 
+    def test_ollama(self) -> tuple[bool, str]:
+        try:
+            client = ollama.Client(host=self.ollama_host)
+            models = client.list()
+            names = ", ".join(m.get("name", "") for m in models.get("models", [])[:5])
+            return True, f"Connected — {len(models.get('models', []))} model(s) available. Top: {names or 'none'}"
+        except Exception as e:
+            return False, f"Failed to reach Ollama at {self.ollama_host}: {e}"
+
+    def test_groq(self) -> tuple[bool, str]:
+        if not self.groq_api_key:
+            return False, "Groq API key not configured."
+        try:
+            url = "https://api.groq.com/openai/v1/models"
+            headers = {"Authorization": f"Bearer {self.groq_api_key}"}
+            resp = requests.get(url, headers=headers, timeout=10)
+            if resp.status_code == 200:
+                models = resp.json().get("data", [])
+                return True, f"Connected — {len(models)} model(s) available (api.groq.com)"
+            resp.raise_for_status()
+        except Exception as e:
+            return False, f"Failed to reach Groq API: {e}"
+
     def _groq_ok(self) -> bool:
         return bool(self.groq_api_key)
 

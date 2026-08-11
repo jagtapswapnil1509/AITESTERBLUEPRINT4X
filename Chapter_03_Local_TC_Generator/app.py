@@ -9,7 +9,7 @@ from jira_client import JiraClient
 from llm_client import LLMClient
 
 TEMPLATES_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "templates")
-JIRA_KEY_PATTERN = re.compile(r"\b([A-Z][A-Z0-9]+-\d+)\b", re.IGNORECASE)
+JIRA_KEY_PATTERN = re.compile(r"\b([A-Z]{2,}[A-Z0-9]*-\d+)\b")
 
 st.set_page_config(page_title="QA Test Case Generator", page_icon="🧪")
 st.title("🧪 QA Test Case Generator")

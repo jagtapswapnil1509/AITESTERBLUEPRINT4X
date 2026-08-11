@@ -90,10 +90,10 @@ Covers structured prompt engineering techniques including the **RICE POT** frame
 
 ## 📖 Chapter 03 — Local Test Case Generator (Streamlit App)
 
-Two-screen Streamlit application that turns Jira tickets into test cases using a local LLM:
+Two-screen Streamlit application that turns Jira tickets into test cases using a local or cloud LLM:
 
-- **Chat Screen** — ChatGPT-style interface. Type `create test cases for QA-102` and the app fetches the Jira ticket, merges its details into a structured prompt template, and streams generated test cases back.
-- **Settings Screen** — Configure Jira URL/email/API token, choose Ollama (default, `gemma3:1b`) or Groq as fallback, and save Groq API key. All credentials persisted in `.config.json` (gitignored).
+- **Chat Screen** — ChatGPT-style interface. Type `create test cases for QA-102` or paste a Jira ticket URL and the app fetches the ticket, merges its details into a structured prompt template, and streams generated test cases back.
+- **Settings Screen** — Configure Jira URL/email/API token, choose Ollama (default, `gemma3:1b`) or Groq as fallback. **🔌 Test Ollama** and **☁️ Test Groq** buttons validate connectivity to both providers directly from the UI. All credentials persisted in `.config.json` (gitignored).
 
 **Flow:** User message → Jira key detection → Jira REST API fetch → template merge → Ollama/Groq streaming → rendered test cases.
 

@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across three progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across four progressive chapters.
 
 ---
 
@@ -45,6 +45,30 @@ AITESTERBLUEPRINT4X/
 │   │   ├── testcase_creator.md              # Generic test case prompt template
 │   │   └── jira_tc_template.md              # Jira-specific structured TC prompt
 │   └── requirements.txt                     # Python dependencies (streamlit, requests, ollama)
+├── Chapter_04_JobKitAI/
+│   ├── Jagtap_Swapnil_Resume_Redesigned.pdf  # Candidate master resume
+│   ├── Job Description from LinkedIn.md      # Job descriptions sourced from LinkedIn
+│   ├── Job Description from the Naukari.md   # Job descriptions sourced from Naukari
+│   ├── output/                               # Tailored .docx resumes (one per company)
+│   │   ├── Capgemini_Jagtap_Swapnil.docx
+│   │   ├── Persistent Systems_Jagtap_Swapnil.docx
+│   │   ├── HTC Global Services_Jagtap_Swapnil.docx
+│   │   ├── Wipro_Jagtap_Swapnil.docx
+│   │   ├── Zurich Cover-More_Jagtap_Swapnil.docx
+│   │   ├── Quarks Technosoft_Jagtap_Swapnil.docx
+│   │   ├── Huron_Jagtap_Swapnil.docx
+│   │   ├── eLabs Infotech_Jagtap_Swapnil.docx
+│   │   ├── Tata Consultancy Services_Jagtap_Swapnil.docx
+│   │   └── Tudip Technologies_Jagtap_Swapnil.docx
+│   └── resume-helper/
+│       └── resume-tailor/
+│           ├── references/
+│           │   ├── resume-json.md           # Resume JSON spec
+│           │   └── writing-rules.md         # Bullet formulas, ATS rules, style rules
+│           ├── scripts/
+│           │   ├── SKILL.md                 # Resume-tailoring workflow
+│           │   └── build_resume.js          # JSON spec → .docx renderer
+│           └── resume-tailor.zip
 ├── README.md
 └── .gitignore
 ```
@@ -103,6 +127,19 @@ cd Chapter_03_Local_TC_Generator
 pip install -r requirements.txt
 streamlit run app.py
 ```
+
+---
+
+## 📖 Chapter 04 — Job Kit AI
+
+Resume-tailoring toolkit that turns a master resume plus a job description into a targeted, ATS-safe `.docx` resume for each role.
+
+- **Master resume** — `Jagtap_Swapnil_Resume_Redesigned.pdf` is the single source of truth.
+- **Job descriptions** — stored in `Job Description from LinkedIn.md` and `Job Description from the Naukari.md`, with the company name at the top of each entry.
+- **Tailored output** — `output/` holds one Word document per company, named `<Company>_Jagtap_Swapnil.docx`.
+- **Resume Tailor skill** — `resume-helper/resume-tailor/` contains the workflow (`SKILL.md`), writing rules (`references/writing-rules.md`), JSON schema (`references/resume-json.md`), and a `build_resume.js` renderer.
+
+**Flow:** master resume + job description → extract JD requirements → cross-reference against the resume → write a tailored JSON spec → render to `.docx`.
 
 ---
 

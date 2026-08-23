@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Job Tracker - Offline Application Pipeline</title>
+    <meta name="description" content="An offline-first job application tracker to manage pipeline stages, follow-up alerts, interviews, and recruiter contacts." />
+    <meta property="og:title" content="Job Tracker - Offline Application Pipeline" />
+    <meta property="og:description" content="An offline-first job application tracker to manage pipeline stages, follow-up alerts, interviews, and recruiter contacts." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <script>
+      (function() {
+        try {
+          const savedTheme = localStorage.getItem('job_tracker_theme');
+          if (savedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+          }
+        } catch (e) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+  </head>
+  <body class="bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-200 antialiased transition-colors duration-200">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+

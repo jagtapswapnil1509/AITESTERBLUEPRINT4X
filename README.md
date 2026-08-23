@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across four progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across five progressive chapters.
 
 ---
 
@@ -69,6 +69,20 @@ AITESTERBLUEPRINT4X/
 │           │   ├── SKILL.md                 # Resume-tailoring workflow
 │           │   └── build_resume.js          # JSON spec → .docx renderer
 │           └── resume-tailor.zip
+├── Chapter_05_JobTrackerAI/
+│   ├── index.html                           # Vite entry — offline-first job pipeline tracker
+│   ├── package.json                         # React 19 + TypeScript + Vite + Tailwind deps
+│   ├── vite.config.ts                       # Vite build/dev config with @ alias
+│   ├── tsconfig.json                        # TypeScript config
+│   ├── metadata.json                        # AI Studio applet metadata
+│   └── src/
+│       ├── App.tsx                          # Root app component
+│       ├── main.tsx                         # React entry point
+│       ├── index.css                        # Global Tailwind styles
+│       ├── components/                      # Board, table, analytics, modals, drawers
+│       ├── types/job.ts                     # Job application domain types
+│       ├── utils/                           # IndexedDB, storage, date/currency helpers
+│       └── data/emailTemplates.ts           # AI-assisted email templates
 ├── README.md
 └── .gitignore
 ```
@@ -143,6 +157,30 @@ Resume-tailoring toolkit that turns a master resume plus a job description into 
 
 ---
 
+## 📖 Chapter 05 — Job Tracker AI
+
+An offline-first, full-featured job application tracker for managing the entire job-search pipeline in one place.
+
+- **Kanban board** — drag-and-drop pipeline stages with status badges and priority tags.
+- **Application records** — detailed entries with notes, contacts, follow-ups, and timeline tracking.
+- **Schedule & table views** — alternate views for deadline management and dense data review.
+- **Resume version tracking** — keep resume versions alongside each application.
+- **Analytics dashboard** — pipeline insights and progress metrics.
+- **Export / import** — JSON-based backup and restore of job data.
+- **AI email assistant** — Google GenAI-powered follow-up email drafting.
+- **Local-first storage** — IndexedDB keeps data private on-device with no backend sync.
+
+**Tech stack:** React 19, TypeScript, Vite, Tailwind CSS, @dnd-kit, IndexedDB, Google GenAI.
+
+**Run it:**
+```bash
+cd Chapter_05_JobTrackerAI
+npm install
+npm run dev
+```
+
+---
+
 ## 🛠️ Getting Started
 
 ### Prerequisites
@@ -154,7 +192,7 @@ Resume-tailoring toolkit that turns a master resume plus a job description into 
 ### Installation
 
 ```bash
-git clone https://github.com/Shree21122000/AITESTERBLUEPRINT4X.git
+git clone https://github.com/jagtapswapnil1509/AITESTERBLUEPRINT4X.git
 cd AITESTERBLUEPRINT4X
 ```
 

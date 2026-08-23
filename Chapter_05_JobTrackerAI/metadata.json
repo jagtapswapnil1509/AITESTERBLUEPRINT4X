@@ -1,0 +1,6 @@
+{
+  "name": "Job Tracker",
+  "description": "An offline-first, full-featured job application tracker with pipeline stages, follow-up alerts, interview logging, contact tracking, and analytics.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

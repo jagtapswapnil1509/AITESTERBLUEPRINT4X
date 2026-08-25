@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across five progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across six progressive chapters.
 
 ---
 
@@ -83,6 +83,16 @@ AITESTERBLUEPRINT4X/
 │       ├── types/job.ts                     # Job application domain types
 │       ├── utils/                           # IndexedDB, storage, date/currency helpers
 │       └── data/emailTemplates.ts           # AI-assisted email templates
+├── Chapter_06_Branding_LinkedinSkills/
+│   ├── README.md                             # Chapter overview and skill usage guide
+│   ├── files.zip                             # Original archive of the skill bundle
+│   ├── content-repurpose-pack.skill          # Packaged .skill bundle (zip of the folder)
+│   └── content-repurpose-pack/               # Installable skill folder
+│       ├── SKILL.md                          # Pipeline, hook protocol, closing sweep
+│       └── references/
+│           ├── brand-voice.md                # Identity, spine, 13 threads, signature lines
+│           ├── deliverable-specs.md          # Exact formats for the four pack files
+│           └── worked-example.md             # One full input-to-output pass
 ├── README.md
 └── .gitignore
 ```
@@ -178,6 +188,18 @@ cd Chapter_05_JobTrackerAI
 npm install
 npm run dev
 ```
+
+---
+
+## 📖 Chapter 06 — Branding & LinkedIn Skills
+
+A Claude/Codex skill (`content-repurpose-pack`) that turns any content seed into a publish-ready pack in Pramod Dutta's Testing Academy voice. Drop in a title, rough bullets, a screenshot, a URL, a thread, or a spoken brain dump, and it returns four files: a Medium article, a LinkedIn post, LinkedIn image prompts, and a Medium cover prompt.
+
+- **Hook / Story / Offer spine** — every piece follows the same three beats with strict word budgets.
+- **Four deliverables** — `pack-1-medium-article.md`, `pack-2-linkedin-post.md`, `pack-3-linkedin-image-prompts.md`, and `pack-4-medium-image-prompt.md`.
+- **Voice enforcement** — re-reads `brand-voice.md` every run, maps content to one of 13 threads, and runs a closing sweep against em dashes, banned phrases, and word counts.
+- **Controversial hook ladder** — graded A/B/C hooks without sanitizing, with X-vs-LinkedIn placement guidance.
+- **Install** — copy `content-repurpose-pack/` into `$HOME/.claude/skills/` or `$HOME/.codex/skills/`, or load `content-repurpose-pack.skill` into a `.skill`-compatible client.
 
 ---
 

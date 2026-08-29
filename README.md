@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across six progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across eight progressive chapters.
 
 ---
 
@@ -93,6 +93,23 @@ AITESTERBLUEPRINT4X/
 │           ├── brand-voice.md                # Identity, spine, 13 threads, signature lines
 │           ├── deliverable-specs.md          # Exact formats for the four pack files
 │           └── worked-example.md             # One full input-to-output pass
+├── Chapter_07_AI_Agents/
+│   └── Test-Plan-Agent-Blast/                 # B.L.A.S.T. Jira-to-Test-Plan agent
+│       ├── app.py                             # Streamlit UI
+│       ├── run.py                             # CLI entry point
+│       ├── navigation.py                      # Pipeline router
+│       ├── tools/                             # jira_fetch, normalize, llm_client, render, ...
+│       ├── architecture/                      # Six markdown SOPs (logic before code)
+│       ├── schemas/                           # JSON Schema contracts for plan + ticket
+│       ├── fixtures/                          # Rich + thin ticket fixtures (no network)
+│       ├── tests/test_pipeline.py             # 45 offline checks
+│       ├── BLAST.md                           # Blueprint/Link/Architect/Stylize/Trigger protocol
+│       ├── LLM.md                             # Project constitution
+│       └── README.md                          # Chapter overview
+├── Chapter_08_n8n/
+│   └── Agents/
+│       ├── 01_FetchJiraTicket_AI_Agent.json   # Chat → fetch a Jira issue via AI Agent
+│       └── 01_CreateJiraTicket_AI_Agent.json  # Chat → create a Jira issue via AI Agent
 ├── README.md
 └── .gitignore
 ```
@@ -200,6 +217,40 @@ A Claude/Codex skill (`content-repurpose-pack`) that turns any content seed into
 - **Voice enforcement** — re-reads `brand-voice.md` every run, maps content to one of 13 threads, and runs a closing sweep against em dashes, banned phrases, and word counts.
 - **Controversial hook ladder** — graded A/B/C hooks without sanitizing, with X-vs-LinkedIn placement guidance.
 - **Install** — copy `content-repurpose-pack/` into `$HOME/.claude/skills/` or `$HOME/.codex/skills/`, or load `content-repurpose-pack.skill` into a `.skill`-compatible client.
+
+---
+
+## 📖 Chapter 07 — AI Agents
+
+A Jira ticket in, a formal test plan out — built on the **B.L.A.S.T.** protocol (Blueprint, Link, Architect, Stylize, Trigger) over the **A.N.T.** three-layer architecture (Architecture → Navigation → Tools).
+
+- **Seven-step pipeline** — parse key → fetch Jira → normalize ADF → readiness gate → single Groq call → render → output. Six steps are deterministic Python; exactly one calls a model, so failures are traceable to the exact step.
+- **Anti-hallucination by design** — the agent never invents acceptance criteria, URLs, dates, or tools; anything not on the ticket lands in an `Assumptions` table, and every scope entry carries a `justified_by` ticket fact.
+- **Readiness gate** — thin tickets (below 5/11) are refused with a gap report naming what to add, unless `--force` is used.
+- **Strict contracts** — the model returns JSON validated against `schemas/plan.schema.json`, and `render.py` owns the output format so the model can't drift from the template.
+- **Dual interface** — Streamlit UI plus a CLI (`python run.py VWO-49`, `--health`, `--dry-run`, `--force`), with 45 offline pipeline checks in `tests/test_pipeline.py`.
+
+**Run it:**
+```bash
+cd Chapter_07_AI_Agents/Test-Plan-Agent-Blast
+pip install -r requirements.txt
+cp .env.example .env          # fill in Jira + Groq credentials, or use the Settings page
+streamlit run app.py
+```
+
+---
+
+## 📖 Chapter 08 — n8n AI Agents
+
+Two importable n8n AI Agent workflows that bridge a chat interface with Jira, using n8n's LangChain AI Agent node with an OpenAI model and a Jira Software Cloud tool.
+
+- **Fetch Jira Ticket Agent** — `01_FetchJiraTicket_AI_Agent.json` responds to a chat message, extracts an issue key, and fetches the issue from Jira via the AI Agent's `Get an issue in Jira Software` tool.
+- **Create Jira Ticket Agent** — `01_CreateJiraTicket_AI_Agent.json` creates a new Jira issue (summary + description) from a chat prompt using the `Create an issue in Jira Software` tool.
+
+**Import:**
+1. In n8n, go to **Workflows → Import from File** and select one of the JSON files in `Chapter_08_n8n/Agents/`.
+2. Reconnect the `Brain` node to your OpenAI credential and the Jira node to your Jira Software Cloud credential.
+3. Activate the workflow and use the chat trigger to interact with the agent.
 
 ---
 

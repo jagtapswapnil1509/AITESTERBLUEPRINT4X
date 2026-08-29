@@ -1,0 +1,212 @@
+{
+  "name": "01_CreateJiraTicket_AI_Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "public": true,
+        "options": {}
+      },
+      "id": "01db680d-d303-4bd9-bf9d-aec75bc6487e",
+      "name": "When chat message received",
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -384,
+        -112
+      ],
+      "webhookId": "6f041c14-8454-4fb2-b0a0-ea69cf93c9e6"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "Please create a Jira ticket by using a tool called “create a Jira”. When user has the chat, create a description and title, add the Jira, and give it to the user."
+        }
+      },
+      "id": "ba0a61c3-64e7-409e-8146-9f0d56de592f",
+      "name": "AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        0,
+        -112
+      ]
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-5-mini"
+        },
+        "builtInTools": {},
+        "options": {}
+      },
+      "id": "5ccad04d-d50d-4cf7-bf39-639992c24f22",
+      "name": "Brain",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [
+        0,
+        96
+      ],
+      "credentials": {
+        "openAiApi": {
+          "id": "PHGb4hvjiC9xBX1M",
+          "name": "n8n free OpenAI API credits"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "id": "09d24938-1486-446e-b51e-79036c9943ca",
+      "name": "Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        96,
+        96
+      ]
+    },
+    {
+      "parameters": {
+        "project": {
+          "__rl": true,
+          "value": "10000",
+          "mode": "list",
+          "cachedResultName": "Salesforce Project 1"
+        },
+        "issueType": {
+          "__rl": true,
+          "mode": "list",
+          "value": "10007",
+          "cachedResultName": "Bug"
+        },
+        "summary": "={{ $fromAI('Summary', ``, 'string') }}",
+        "additionalFields": {
+          "description": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Description', ``, 'string') }}"
+        }
+      },
+      "id": "f97ffcb8-6930-4c7f-a56b-ca25f89dcd56",
+      "name": "Create an issue in Jira Software",
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        288,
+        96
+      ],
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "H1EYipC7fZe73Enn",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Trigger",
+        "height": 480,
+        "width": 336
+      },
+      "id": "eb89a2f9-b882-44e9-b565-59a335aac975",
+      "name": "Sticky Note",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -464,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Action",
+        "height": 480,
+        "width": 560,
+        "color": 4
+      },
+      "id": "25190fae-3449-410f-9fb0-6007955f7190",
+      "name": "Sticky Note1",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -96,
+        -224
+      ]
+    },
+    {
+      "parameters": {
+        "content": "## Result",
+        "height": 480,
+        "width": 336,
+        "color": 6
+      },
+      "id": "4e9f533a-a665-44c1-8885-1d26d9322091",
+      "name": "Sticky Note2",
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        528,
+        -224
+      ]
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Brain": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create an issue in Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "a64d0c1f-3f11-4067-a5bf-1fdba4765bd9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "3e08b9ab3766abec638907b142a1f89ef905484a7030c19423da6c88e3c8bbe8"
+  },
+  "nodeGroups": [],
+  "id": "jQgxS78y5AhmFh7h",
+  "tags": []
+}

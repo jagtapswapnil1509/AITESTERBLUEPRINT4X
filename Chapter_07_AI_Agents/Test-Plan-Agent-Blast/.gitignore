@@ -1,5 +1,5 @@
-".env"  
-"config.json"  
-"__pycache__/"  
-".tmp/"  
-"out/"  
+.env
+config.json
+__pycache__/
+.tmp/
+out/

@@ -1,0 +1,216 @@
+{
+  "name": "05_Social_Media_AIAgent",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 9
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -624,
+        80
+      ],
+      "id": "5fb1c0e3-5b9a-42c8-a54a-225e58ba2d52",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -400,
+        -48
+      ],
+      "id": "244f66d9-4525-4b4c-979f-044d23d281dc",
+      "name": "Content Topic Generator"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -16,
+        -112
+      ],
+      "id": "3b406d86-239b-4950-a8ff-7419e4f593a4",
+      "name": "Content Creator(Linked in Post)"
+    },
+    {
+      "parameters": {
+        "resource": "image",
+        "modelId": {
+          "__rl": true,
+          "mode": "list",
+          "value": "models/gemini-3.1-flash-image-preview"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        -128
+      ],
+      "id": "5e167225-6b2e-4ec3-a452-37781b440e91",
+      "name": "Generate an image"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        288,
+        96
+      ],
+      "id": "df9e37e3-d55c-477d-9d79-8bf222cad3f1",
+      "name": "Hash Tag"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        592,
+        -128
+      ],
+      "id": "e631cd25-da40-467a-8fbf-e99c29f4d05a",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        816,
+        -128
+      ],
+      "id": "c6e55b9f-3a16-46cb-8cee-6756b843fadd",
+      "name": "Review the Post"
+    },
+    {
+      "parameters": {
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.linkedIn",
+      "typeVersion": 1,
+      "position": [
+        1184,
+        -128
+      ],
+      "id": "d3087337-21d3-4f66-b680-22b91ddb189b",
+      "name": "Create a post"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Schedule Trigger": {
+      "main": [
+        [
+          {
+            "node": "Content Topic Generator",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Topic Generator": {
+      "main": [
+        [
+          {
+            "node": "Content Creator(Linked in Post)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Content Creator(Linked in Post)": {
+      "main": [
+        [
+          {
+            "node": "Generate an image",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Hash Tag",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Generate an image": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Hash Tag": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Review the Post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Review the Post": {
+      "main": [
+        [
+          {
+            "node": "Create a post",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "5f0e8b44-2563-4fa9-a6fb-3239ec58c481",
+  "meta": {
+    "instanceId": "3e08b9ab3766abec638907b142a1f89ef905484a7030c19423da6c88e3c8bbe8"
+  },
+  "nodeGroups": [],
+  "id": "9xUAtL2dttsNADYk",
+  "tags": []
+}

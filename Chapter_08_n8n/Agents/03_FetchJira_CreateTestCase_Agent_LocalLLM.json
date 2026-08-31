@@ -1,0 +1,187 @@
+{
+  "name": "03_FetchJira_CreateTestCase_Agent_LocalLLM",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {
+          "systemMessage": "You have to take the JIRA Id and fetch from the JIRA Tool the issue with Id and create the Test Plan for it."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        -176,
+        -64
+      ],
+      "id": "311961a9-54ad-4a02-9f36-74df5c569e12",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "openai/gpt-oss-120b",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+      "typeVersion": 1,
+      "position": [
+        -480,
+        160
+      ],
+      "id": "c9d2316b-5680-4bbd-afba-222286477d88",
+      "name": "Groq Chat Model",
+      "credentials": {
+        "groqApi": {
+          "id": "icpzX1MPw9H0XCvi",
+          "name": "Groq account"
+        }
+      },
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [
+        -464,
+        -64
+      ],
+      "id": "ffc6b3b5-0283-4017-b681-9413dfa23ad2",
+      "name": "When chat message received",
+      "webhookId": "e591c28d-21e5-458c-ae91-83509f9fddc1"
+    },
+    {
+      "parameters": {
+        "model": "llama3.2:latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOllama",
+      "typeVersion": 1,
+      "position": [
+        -320,
+        144
+      ],
+      "id": "e71f6511-70d5-4127-9012-f7717475f492",
+      "name": "Local Ollama setup",
+      "credentials": {
+        "ollamaApi": {
+          "id": "OzTJXP4J1qhaJNdI",
+          "name": "Ollama account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## 100% Local Setup",
+        "height": 304,
+        "width": 352
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "position": [
+        256,
+        -112
+      ],
+      "typeVersion": 1,
+      "id": "7421bba2-05b0-4bd5-b73f-3c22bda737cc",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.4,
+      "position": [
+        -176,
+        144
+      ],
+      "id": "c2ba8f32-f7ca-4aff-a69b-608fed988471",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "issueKey": "={{ /*n8n-auto-generated-fromAI-override*/ $fromAI('Issue_Key', ``, 'string') }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.jiraTool",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        144
+      ],
+      "id": "895c8026-3a21-43f2-9fb3-630fa4f8097b",
+      "name": "Get an issue in Jira Software",
+      "credentials": {
+        "jiraSoftwareCloudApi": {
+          "id": "Kk65Xekv6MpYwbN3",
+          "name": "Jira SW Cloud account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Groq Chat Model": {
+      "ai_languageModel": [
+        []
+      ]
+    },
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Local Ollama setup": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get an issue in Jira Software": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "8c81e980-17fc-408b-9dbe-44c62dbd9104",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "e5e0383abe73bc2f54ed8eeae6fb98c857d5eba01c4fea1479934e7dfdc4d1ab"
+  },
+  "nodeGroups": [],
+  "id": "D94xtWSGUFSq1wO0",
+  "tags": []
+}

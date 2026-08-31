@@ -107,9 +107,19 @@ AITESTERBLUEPRINT4X/
 │       ├── LLM.md                             # Project constitution
 │       └── README.md                          # Chapter overview
 ├── Chapter_08_n8n/
-│   └── Agents/
-│       ├── 01_FetchJiraTicket_AI_Agent.json   # Chat → fetch a Jira issue via AI Agent
-│       └── 01_CreateJiraTicket_AI_Agent.json  # Chat → create a Jira issue via AI Agent
+│   ├── Agents/
+│   │   ├── 01_FetchJiraTicket_AI_Agent.json                # Chat → fetch a Jira issue
+│   │   ├── 02_CreateJiraTicket_AI_Agent.json               # Chat → create a Jira issue
+│   │   ├── 03_FetchJira_CreateTestCase_Agent_LocalLLM.json # Fetch Jira → test plan (local LLM)
+│   │   ├── 04_BugTriage_AI_Agent.json                      # Bulk triage Jira bugs → Google Sheets
+│   │   ├── 05_RCA_Chatgpt_Jira_Production_Bug_RCA_Automation.json # Production bug → RCA → Sheets + Excel
+│   │   └── 06_Social_Media_AIAgent.json                    # Scheduled LinkedIn post + image
+│   └── Resources/
+│       ├── 01_Raw_BugTriage.prompt.md                      # Original bug-triage prompt
+│       ├── 02_ModifiedBugTriagePrompt.prompt.md            # Refined bug-triage prompt
+│       ├── 03_RCA_AI_Agent.prompt.md                       # Production-bug RCA agent prompt
+│       ├── Jira_Bug_Triage_Sample.xlsx                     # Sample triage output spreadsheet
+│       └── VWO-49_RCA.doc                                  # Reference RCA document
 ├── README.md
 └── .gitignore
 ```
@@ -242,15 +252,21 @@ streamlit run app.py
 
 ## 📖 Chapter 08 — n8n AI Agents
 
-Two importable n8n AI Agent workflows that bridge a chat interface with Jira, using n8n's LangChain AI Agent node with an OpenAI model and a Jira Software Cloud tool.
+Six importable n8n AI Agent workflows plus supporting prompt/sample resources, built with n8n's LangChain AI Agent node and Jira Software Cloud / Google Workspace / LinkedIn integrations.
 
-- **Fetch Jira Ticket Agent** — `01_FetchJiraTicket_AI_Agent.json` responds to a chat message, extracts an issue key, and fetches the issue from Jira via the AI Agent's `Get an issue in Jira Software` tool.
-- **Create Jira Ticket Agent** — `01_CreateJiraTicket_AI_Agent.json` creates a new Jira issue (summary + description) from a chat prompt using the `Create an issue in Jira Software` tool.
+- **Fetch Jira Ticket Agent** — `01_FetchJiraTicket_AI_Agent.json` extracts an issue key from a chat message and fetches the issue via the `Get an issue in Jira Software` tool.
+- **Create Jira Ticket Agent** — `02_CreateJiraTicket_AI_Agent.json` creates a new Jira issue (summary + description) from a chat prompt via the `Create an issue in Jira Software` tool.
+- **Fetch Jira → Test Case Agent (Local LLM)** — `03_FetchJira_CreateTestCase_Agent_LocalLLM.json` takes a Jira ID, fetches the issue, and generates a test plan — runnable 100% locally via Ollama (`llama3.2`), with a Groq fallback.
+- **Bug Triage AI Agent** — `04_BugTriage_AI_Agent.json` retrieves Jira bugs and triages each one (severity, priority, disposition, category, suspected layer, confidence) into a Google Sheet, appending or updating by `jira_key`.
+- **Production Bug RCA Automation** — `05_RCA_Chatgpt_Jira_Production_Bug_RCA_Automation.json` listens for production-bug Jira events, builds an evidence package, generates a structured Root Cause Analysis, and writes it to a Google Sheets template plus an exported `.xlsx`, with deduplication, versioning, and an audit log.
+- **Social Media AI Agent** — `06_Social_Media_AIAgent.json` runs on a schedule to generate a LinkedIn post topic, create the post, generate a Gemini image, add hashtags, review, and publish.
+
+**Resources** — `Chapter_08_n8n/Resources/` holds the raw and refined bug-triage prompts, the production-bug RCA agent prompt, a sample `Jira_Bug_Triage_Sample.xlsx`, and a reference `VWO-49_RCA.doc`.
 
 **Import:**
 1. In n8n, go to **Workflows → Import from File** and select one of the JSON files in `Chapter_08_n8n/Agents/`.
-2. Reconnect the `Brain` node to your OpenAI credential and the Jira node to your Jira Software Cloud credential.
-3. Activate the workflow and use the chat trigger to interact with the agent.
+2. Reconnect each `Brain` / chat model node to your LLM credential (OpenAI, Groq, or Ollama), the Jira node to your Jira Software Cloud credential, and Google/Drive/Sheets nodes to your Google credential as applicable.
+3. Activate the workflow and use its trigger (chat, schedule, or Jira webhook) to interact with the agent.
 
 ---
 

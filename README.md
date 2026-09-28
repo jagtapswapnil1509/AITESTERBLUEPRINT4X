@@ -114,7 +114,11 @@ AITESTERBLUEPRINT4X/
 │   │   ├── 04_BugTriage_AI_Agent.json                      # Bulk triage Jira bugs → Google Sheets
 │   │   ├── 05_RCA_Chatgpt_Jira_Production_Bug_RCA_Automation.json # Production bug → RCA → Sheets + Excel
 │   │   ├── 06_Social_Media_AIAgent.json                    # Scheduled LinkedIn post + image
-│   │   └── 07_Social_Post_Generator (Gemini+ Upload Post).json # Gemini image + LinkedIn post upload
+│   │   ├── 07_Social_Post_Generator (Gemini+ Upload Post).json # Gemini image + LinkedIn post upload
+│   │   ├── 08_Screenshot_To_Bug_Reporter_AIAgent.json      # Screenshot → Groq vision → Jira bug + attachment
+│   │   ├── 09_Screenshot_To_Bug_Reporter_AIAgent_UI.json   # Webhook variant serving the Vercel UI
+│   │   ├── Plan.md                                         # Model research & architecture notes
+│   │   └── Prompt.md                                       # Build prompt + failure post-mortem
 │   └── Resources/
 │       ├── 01_Raw_BugTriage.prompt.md                      # Original bug-triage prompt
 │       ├── 02_ModifiedBugTriagePrompt.prompt.md            # Refined bug-triage prompt
@@ -253,7 +257,7 @@ streamlit run app.py
 
 ## 📖 Chapter 08 — n8n AI Agents
 
-Seven importable n8n AI Agent workflows plus supporting prompt/sample resources, built with n8n's LangChain AI Agent node and Jira Software Cloud / Google Workspace / LinkedIn integrations.
+Nine importable n8n workflows plus supporting prompt/sample resources, built with n8n's LangChain AI Agent node and Jira Software Cloud / Google Workspace / LinkedIn integrations. The two screenshot-to-bug workflows (08–09) are deterministic node chains with a single bounded vision call rather than an AI Agent node.
 
 - **Fetch Jira Ticket Agent** — `01_FetchJiraTicket_AI_Agent.json` extracts an issue key from a chat message and fetches the issue via the `Get an issue in Jira Software` tool.
 - **Create Jira Ticket Agent** — `02_CreateJiraTicket_AI_Agent.json` creates a new Jira issue (summary + description) from a chat prompt via the `Create an issue in Jira Software` tool.
@@ -262,8 +266,10 @@ Seven importable n8n AI Agent workflows plus supporting prompt/sample resources,
 - **Production Bug RCA Automation** — `05_RCA_Chatgpt_Jira_Production_Bug_RCA_Automation.json` listens for production-bug Jira events, builds an evidence package, generates a structured Root Cause Analysis, and writes it to a Google Sheets template plus an exported `.xlsx`, with deduplication, versioning, and an audit log.
 - **Social Media AI Agent** — `06_Social_Media_AIAgent.json` runs on a schedule to generate a LinkedIn post topic, create the post, generate a Gemini image, add hashtags, review, and publish.
 - **Social Post Generator (Gemini + Upload Post)** — `07_Social_Post_Generator (Gemini+ Upload Post).json` generates a topic (Gemini), writes the LinkedIn post (GPT-5-mini), creates a Gemini image, converts it to a file, sends it via Telegram, and uploads the post to LinkedIn.
+- **Screenshot To Bug Reporter Agent** — `08_Screenshot_To_Bug_Reporter_AIAgent.json` takes a screenshot upload plus optional error logs, steps, severity, and environment via an n8n form, sends it to a Groq vision model (`qwen/qwen3.6-27b`, JSON mode), and files a structured Jira bug with the screenshot attached.
+- **Screenshot To Bug Reporter Agent (UI)** — `09_Screenshot_To_Bug_Reporter_AIAgent_UI.json` is the webhook/JSON API variant of 08 (`qwen/qwen3.8-27b`) that serves the Vercel UI in `/ui_screenshotbugAIAgent` via a serverless proxy, returning the filed ticket as JSON.
 
-**Resources** — `Chapter_08_n8n/Resources/` holds the raw and refined bug-triage prompts, the production-bug RCA agent prompt, a sample `Jira_Bug_Triage_Sample.xlsx`, and a reference `VWO-49_RCA.doc`.
+**Resources** — `Chapter_08_n8n/Resources/` holds the raw and refined bug-triage prompts, the production-bug RCA agent prompt, a sample `Jira_Bug_Triage_Sample.xlsx`, and a reference `VWO-49_RCA.doc`. Design notes and the build/failure post-mortem for the screenshot-to-bug agents live in `Chapter_08_n8n/Agents/Plan.md` and `Prompt.md`.
 
 **Import:**
 1. In n8n, go to **Workflows → Import from File** and select one of the JSON files in `Chapter_08_n8n/Agents/`.

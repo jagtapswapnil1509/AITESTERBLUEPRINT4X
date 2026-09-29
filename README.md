@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across eight progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across nine progressive chapters.
 
 ---
 
@@ -125,6 +125,24 @@ AITESTERBLUEPRINT4X/
 │       ├── 03_RCA_AI_Agent.prompt.md                       # Production-bug RCA agent prompt
 │       ├── Jira_Bug_Triage_Sample.xlsx                     # Sample triage output spreadsheet
 │       └── VWO-49_RCA.doc                                  # Reference RCA document
+├── Chapter_09_LangFlow/
+│   ├── Notes.md                                             # LangFlow setup notes (pip + venv)
+│   ├── AI_Agents/
+│   │   ├── 01_LangFlow_Simple_HelloWorld.json               # Hello World flow (Groq)
+│   │   ├── 002_AI4X_002_Bug_Triage_AI_Agent.json            # Bug triage agent (DeepSeek + Jira)
+│   │   ├── 03_AI4X_003_Bug_Triage_AI_Agent_Agentic.json     # Agentic bug triage (Agent node)
+│   │   └── 004_AI4X_004_Bug_Triage_AI_Agent_Via_UI.json     # Bug triage exposed for a web UI
+│   └── ui_bugtriage/                                        # React (Vite) chat UI for the Via-UI flow
+│       ├── index.html
+│       ├── package.json
+│       ├── vite.config.js
+│       ├── vercel.json
+│       ├── .env.example
+│       ├── api/run.js                                       # Vercel serverless proxy (injects x-api-key)
+│       └── src/
+│           ├── App.jsx
+│           ├── main.jsx
+│           └── styles.css
 ├── README.md
 └── .gitignore
 ```
@@ -275,6 +293,36 @@ Nine importable n8n workflows plus supporting prompt/sample resources, built wit
 1. In n8n, go to **Workflows → Import from File** and select one of the JSON files in `Chapter_08_n8n/Agents/`.
 2. Reconnect each `Brain` / chat model node to your LLM credential (OpenAI, Groq, or Ollama), the Jira node to your Jira Software Cloud credential, and Google/Drive/Sheets nodes to your Google credential as applicable.
 3. Activate the workflow and use its trigger (chat, schedule, or Jira webhook) to interact with the agent.
+
+---
+
+## 📖 Chapter 09 — LangFlow
+
+Visual, low-code LLM workflow builder for assembling AI agent flows. This chapter builds a Bug Triage agent four ways — from a minimal Hello World to an agentic loop to a flow served behind a browser UI.
+
+- **Hello World Flow** — `AI_Agents/01_LangFlow_Simple_HelloWorld.json` is the minimal LangFlow flow (ChatInput → Groq → ChatOutput) to verify a working environment.
+- **Bug Triage AI Agent** — `AI_Agents/002_AI4X_002_Bug_Triage_AI_Agent.json` fetches a Jira bug and has a DeepSeek model return a structured triage (severity, priority, and QA comments).
+- **Agentic Bug Triage** — `AI_Agents/03_AI4X_003_Bug_Triage_AI_Agent_Agentic.json` wraps the same objective in a LangFlow Agent node (Objective → Tool → Action → Result) so the model drives its own tool calls against Jira.
+- **Bug Triage via UI** — `AI_Agents/004_AI4X_004_Bug_Triage_AI_Agent_Via_UI.json` exposes the triage flow behind a chat endpoint for a browser frontend.
+
+**Bug Triage UI** — `ui_bugtriage/` is a light-mode React (Vite) chat UI for the Via-UI flow. Type a Jira key, hit Run, and get the triage rendered as markdown (tables included). A Vite dev proxy rewrites `/api/run` to the LangFlow endpoint and injects `x-api-key`, keeping the key out of client-side JS and avoiding CORS.
+
+**Setup:**
+```bash
+# LangFlow (Option 1 from Notes.md)
+python -m venv venv
+source venv/bin/activate        # Windows: venv\Scripts\activate
+pip install langflow
+langflow run                    # http://localhost:7860
+
+# Bug Triage UI
+cd Chapter_09_LangFlow/ui_bugtriage
+npm install
+cp .env.example .env.local      # fill LANGFLOW_URL / LANGFLOW_FLOW_ID / LANGFLOW_API_KEY
+npm run dev                     # http://localhost:5180
+```
+
+**Import** — In LangFlow, import each JSON from `AI_Agents/` into a project and reconnect the model node (Groq or DeepSeek) and Jira credentials.
 
 ---
 

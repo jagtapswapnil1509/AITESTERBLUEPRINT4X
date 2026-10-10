@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across nine progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across eleven progressive chapters.
 
 ---
 
@@ -143,6 +143,28 @@ AITESTERBLUEPRINT4X/
 │           ├── App.jsx
 │           ├── main.jsx
 │           └── styles.css
+├── Chapter_10_RAG_Basics/
+│   └── 01_RAG_Explorer/                              # Watchable RAG pipeline (PDF → chunks → vectors → answer)
+│       ├── README.md                                 # Chapter overview + run guide
+│       ├── run.sh                                    # Starts Ollama + backend + frontend (http://localhost:5190)
+│       ├── data/
+│       │   └── Product Requirements Document_ VWO Login Dashboard (8).pdf  # 7-page PRD corpus
+│       ├── server/app.py                             # Whole pipeline in one file (~330 lines)
+│       ├── scripts/
+│       │   ├── export_chunks.py                      # Dump chunks to JSON
+│       │   └── chunks.json                           # Pre-exported chunks
+│       ├── api/chat.js                               # Vercel serverless proxy
+│       ├── vercel.json                               # Vercel deploy config
+│       └── ui/                                       # React (Vite) three-tab UI
+│           ├── index.html
+│           ├── package.json
+│           ├── vite.config.js
+│           ├── build-index.mjs                       # Static chunk index for the hosted demo
+│           └── src/
+│               ├── App.jsx                           # Ingest & Chunks / Search / Chat tabs
+│               ├── engine.js                         # Client-side similarity + embedding engine
+│               ├── main.jsx
+│               └── styles.css
 ├── Chapter_11_RAG_Implementation/
 │   ├── 00_NAIVE_RAG/
 │   │   ├── Prompt.md                                    # ChatGPT thread that generated the corpus
@@ -344,6 +366,25 @@ npm run dev                     # http://localhost:5180
 ```
 
 **Import** — In LangFlow, import each JSON from `AI_Agents/` into a project and reconnect the model node (Groq or DeepSeek) and Jira credentials.
+
+---
+
+## 📖 Chapter 10 — RAG Basics
+
+RAG (Retrieval Augmented Generation) lets an LLM answer from *your* documents instead of its training data: split a document into chunks, embed each chunk, and at question time retrieve the closest chunks and paste them into the prompt.
+
+- **RAG Explorer** — `01_RAG_Explorer/` is a RAG pipeline you can watch happen, pointed at a 7-page VWO Login Dashboard PRD. Every stage is on screen: raw extraction, repair, chunks, the 768-number vectors, similarity scores, and the verbatim prompt that reaches the model.
+- **Local-first ingest** — extract (pypdf) → normalise (regex) → chunk (word windows + overlap) → embed (`nomic-embed-text` via Ollama, 768d) → store/search (ChromaDB, cosine) all run locally; only the top-3 retrieved chunks go to Groq (`gpt-oss-120b`) for the Chat tab.
+- **Three tabs** — **Ingest & Chunks** (chunk size/overlap sliders plus before/after normalisation), **Search** (retrieval with no LLM, ranked by cosine similarity), and **Chat** (same retrieval + a grounded answer with token counts and the verbatim prompt).
+- **The normalisation gotcha** — pypdf returns Google-Docs-exported PDFs as one word per line, which embeds into noise; the normaliser rejoins them (removing 2,432 chars of junk on this file).
+
+**Run it:**
+```bash
+cd Chapter_10_RAG_Basics/01_RAG_Explorer
+./run.sh            # http://localhost:5190
+```
+
+**Requirements:** Ollama with `nomic-embed-text` (`ollama pull nomic-embed-text`), Python 3.10+, Node 18+, and a `GROQ_API_KEY` in `.env` (only needed for the Chat tab).
 
 ---
 

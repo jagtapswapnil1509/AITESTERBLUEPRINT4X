@@ -143,6 +143,27 @@ AITESTERBLUEPRINT4X/
 │           ├── App.jsx
 │           ├── main.jsx
 │           └── styles.css
+├── Chapter_11_RAG_Implementation/
+│   ├── 00_NAIVE_RAG/
+│   │   ├── Prompt.md                                    # ChatGPT thread that generated the corpus
+│   │   ├── data/
+│   │   │   └── Wingify_Login_100_Jira_Test_Cases.csv    # 100 Wingify login test cases (18 fields)
+│   │   ├── langflow/
+│   │   │   ├── Ai4x_Naive_RAG.json                      # Naive RAG LangFlow flow (AstraDB)
+│   │   │   └── VWO_500_Test_Cases.csv                   # 500 test-case corpus
+│   │   └── n8n/
+│   │       ├── 01_Naive_RAG.json                        # 15 nodes: blind text splitting
+│   │       └── 01_Naive_RAG - Complete Test Cases.json  # 20 nodes: one document per row
+│   ├── 01_ADVANCE_RAG/
+│   │   └── Ai4x_Advance_RAG.json                        # Advanced RAG (AstraDB + Cohere rerank)
+│   └── LangFlow/
+│       ├── AI_3X_NaiREADY_ve RAG_Imporve_Chunk.json     # Improved-chunking (OpenAI + Chroma)
+│       ├── New Flow (1) (3).json                        # NVIDIA embeddings + AstraDB + Groq
+│       ├── Advance_RAG/
+│       │   └── Ai4x_Advance_RAG.json                    # Advanced RAG (AstraDB + Cohere rerank)
+│       └── Fixed/
+│           ├── Fixed_AI4X_Naive_RAG.json                # Fixed naive RAG (AstraDB)
+│           └── VWO_500_Test_Cases.csv                   # 500 test-case corpus
 ├── README.md
 └── .gitignore
 ```
@@ -323,6 +344,21 @@ npm run dev                     # http://localhost:5180
 ```
 
 **Import** — In LangFlow, import each JSON from `AI_Agents/` into a project and reconnect the model node (Groq or DeepSeek) and Jira credentials.
+
+---
+
+## 📖 Chapter 11 — RAG Implementation
+
+RAG over a CSV corpus of Wingify login test cases, scaling from Chapter 10's local Chroma index to hosted vector stores. The naive baseline ingests a hundred near-identical records and shows why blind splitting fails; the advanced flow adds reranking.
+
+- **Naive RAG** — `00_NAIVE_RAG/` is built around `data/Wingify_Login_100_Jira_Test_Cases.csv` (100 cases, 18 fields, ~30k words). Two n8n workflows ingest and retrieve: `01_Naive_RAG.json` (15 nodes, default Recursive Character Text Splitter) vs `01_Naive_RAG - Complete Test Cases.json` (20 nodes, one document per CSV row with the row's fields as metadata). Stack per the source notes: Pinecone index `airagnew`, namespace `wingify-login-v2`, `text-embedding-3-large`, `gpt-5-mini`.
+- **Naive RAG in LangFlow** — `00_NAIVE_RAG/langflow/Ai4x_Naive_RAG.json` mirrors the naive ingest pipeline (File → Parser → SplitText → AstraDB vector store) with a chat retrieval leg, using `VWO_500_Test_Cases.csv` as a 500-case corpus.
+- **Advanced RAG** — `01_ADVANCE_RAG/Ai4x_Advance_RAG.json` is a LangFlow flow that adds a DataStax AstraDB vector store plus Cohere reranking (mirrored in `LangFlow/Advance_RAG/`).
+- **LangFlow variants** — `LangFlow/AI_3X_NaiREADY_ve RAG_Imporve_Chunk.json` (improved chunking over OpenAI embeddings + Chroma), `LangFlow/New Flow (1) (3).json` (NVIDIA embeddings + AstraDB + Groq), and `LangFlow/Fixed/Fixed_AI4X_Naive_RAG.json` (fixed naive flow) with a second `VWO_500_Test_Cases.csv`.
+
+**Key lesson:** a hundred near-identical records is the hard case for retrieval — the vectors cluster tightly and top-k barely discriminates. The "complete" workflow never splits text; it builds one document per row and attaches `category`/`scenario_type` as metadata so you can filter before ranking. The CSV also carries a UTF-8 BOM (`﻿Test Case ID`), handled via `enableBOM: true` in n8n or a `replace(/^﻿/, '')` strip.
+
+**Import:** in n8n, use **Workflows → Import from File** for `00_NAIVE_RAG/n8n/*.json` and reconnect the Pinecone/OpenAI credentials; in LangFlow, import the JSONs from `00_NAIVE_RAG/langflow/`, `01_ADVANCE_RAG/`, and `LangFlow/` and reconnect the vector-store, embedding, and model nodes.
 
 ---
 

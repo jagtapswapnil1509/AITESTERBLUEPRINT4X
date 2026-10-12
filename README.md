@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-4.0.0-blue.svg)](https://github.com)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across eleven progressive chapters.
+**AI Tester Blueprint 4X** is a next-generation architecture and blueprint for AI-driven automated testing, intelligent test case generation, autonomous test execution, and comprehensive software quality assurance — organized across fourteen progressive chapters.
 
 ---
 
@@ -186,6 +186,40 @@ AITESTERBLUEPRINT4X/
 │       └── Fixed/
 │           ├── Fixed_AI4X_Naive_RAG.json                # Fixed naive RAG (AstraDB)
 │           └── VWO_500_Test_Cases.csv                   # 500 test-case corpus
+├── Chapter_12_RAG_QA_BuddyAI/
+│   ├── README.md                                     # Chapter overview + the five design decisions
+│   ├── run.sh                                        # Starts Qdrant + Ollama, ingests, http://localhost:8300
+│   ├── requirements.txt                              # Python deps (qdrant-client, sentence-transformers, ...)
+│   ├── sources.yaml                                  # Maps each data folder to its chunker
+│   ├── glossary.yaml                                 # Team shorthand expanded at query time
+│   ├── api/                                          # Vercel serverless demo proxy
+│   ├── data/                                         # 10 source folders (test cases, Jira, docs, notes, charts, logs, code)
+│   ├── deploy/                                       # Dockerfile, Compose, Caddyfile, DEPLOY.md, hourly cron
+│   ├── docs/                                         # RCA answer + retrieval-trace screenshots
+│   ├── eval/                                         # golden.yaml retrieval set + last_run.json
+│   ├── qabuddy/                                      # Python package: ingest, chunkers/, embed, retrieve, rerank, answer
+│   ├── tests/test_pipeline.py                        # 18 regression tests
+│   └── ui/                                           # React (Vite) cited-answer chat UI
+├── Chapter_13_MCP_Basics/
+│   └── MCP_Inspector.md                              # What MCP is: host/client/server + tools/resources/prompts
+├── Chapter_14_MCP_Create_VIBE/
+│   ├── 00_Objective.md                               # Goal: expose the 5,000 VWO test cases as MCP tools
+│   ├── 01_TestCreatorMCP.plan.md                     # Build plan (data profile, 21 tools, ranking, suite rules)
+│   ├── 02_prompt.md                                  # The 13 prompts used to build both servers, with outcomes
+│   ├── assets/                                       # Codex-rendered sketchnotes + their briefs
+│   ├── data/
+│   │   └── vwo_5000_test_cases.csv                   # Source-of-truth test-case catalog
+│   ├── testcase-creator-mcp/                         # FastMCP 4.1 server — 21 tools, 4 resources, 3 prompts
+│   │   ├── pyproject.toml
+│   │   ├── README.md                                 # Connection options (Inspector, Claude Code, VS Code, Cursor)
+│   │   ├── src/tc_mcp/                               # server, repository, ranking, validation, resolver, tools/
+│   │   └── tests/                                    # 33 offline tests
+│   └── testskill-finder-mcp/                         # FastMCP 4.1 server — 100 skills, 15 tools, 103 prompts
+│       ├── pyproject.toml
+│       ├── README.md                                 # Connection options + the skill catalog
+│       ├── skills/                                   # 100 SKILL.md files + CATALOG.md
+│       ├── src/tsf_mcp/                              # catalog, search, sync, tools
+│       └── tests/                                    # 42 tests
 ├── README.md
 └── .gitignore
 ```
@@ -400,6 +434,44 @@ RAG over a CSV corpus of Wingify login test cases, scaling from Chapter 10's loc
 **Key lesson:** a hundred near-identical records is the hard case for retrieval — the vectors cluster tightly and top-k barely discriminates. The "complete" workflow never splits text; it builds one document per row and attaches `category`/`scenario_type` as metadata so you can filter before ranking. The CSV also carries a UTF-8 BOM (`﻿Test Case ID`), handled via `enableBOM: true` in n8n or a `replace(/^﻿/, '')` strip.
 
 **Import:** in n8n, use **Workflows → Import from File** for `00_NAIVE_RAG/n8n/*.json` and reconnect the Pinecone/OpenAI credentials; in LangFlow, import the JSONs from `00_NAIVE_RAG/langflow/`, `01_ADVANCE_RAG/`, and `LangFlow/` and reconnect the vector-store, embedding, and model nodes.
+
+## 📖 Chapter 12 — RAG QA Buddy AI
+
+Multi-source hybrid RAG that turns one QA question into one **cited** answer grounded in the team's real material — test cases, Jira bugs, PRDs, meeting notes, Lucid charts, Jenkins logs, and both automation frameworks. Fully self-hosted: the embedding model and vector database run on your own machine or VPS.
+
+- **Retrieval** — Qwen3-Embedding-4B (via Ollama, truncated to 1024 dims) plus a code-aware BM25 vector in one Qdrant collection, fused with native RRF and then reranked by `bge-reranker-v2-m3`.
+- **Source-aware chunking** — the rule is "chunk along the unit a QA engineer asks about": one test-case row, one Jira comment, a heading-aware PRD section, one log-failure window, or a tree-sitter AST node — never bare character counts.
+- **Six modes** — 💬 Ask anything, 🧯 Failure analysis (RCA), 🧪 Test design & gaps, 🐞 Bug triage, 🛠️ Framework coding help, and 🧭 Traceability (RTM).
+- **Results** — all four retrievers hit 100% @k=6 on a 24-question golden set; MRR climbs from 0.83 (dense) to 0.91 (full pipeline). 18 regression tests pin the bugs found while building.
+- **Ingest & deploy** — incremental by sha256 per file, Jira via REST + JQL (`sync-jira`), and a `deploy/` bundle (Docker Compose + Caddy HTTPS + hourly auto-ingest cron).
+
+**Run it:**
+```bash
+cd Chapter_12_RAG_QA_BuddyAI
+./run.sh            # starts Qdrant + Ollama, ingests on first run, opens http://localhost:8300
+```
+
+---
+
+## 📖 Chapter 13 — MCP Basics
+
+Concept notes on the Model Context Protocol: how an application exposes tools, resources and prompts to an LLM, and why MCP is not just another API.
+
+- **MCP vs API** — MCP is an open standard for connecting AI applications (Claude Code, Codex, Cursor, VS Code, Kiro) to external systems (Jira, Slack, Playwright, Selenium, GitHub, Postgres).
+- **The three roles** — the **host** runs the model, the **client** lives inside the host and holds a 1:1 connection to a **server**, and the **server** exposes one tool or data source in a standard shape the AI can understand.
+- **Tools / Resources / Prompts** — tools are the action-oriented verbs (like a POST), resources are read-only context (like a GET), and prompts are pre-built recipes stored on the server.
+- **Hands-on** — installing the Playwright MCP in VS Code and Antigravity.
+
+---
+
+## 📖 Chapter 14 — Create MCP (VIBE)
+
+Two working **FastMCP 4.1** MCP servers, built prompt-first (the exact 13 prompts, with outcomes, are in `02_prompt.md`) from a CSV catalog and a skills library. Neither server calls an LLM — the client's model does the reasoning — so both stay deterministic, free and offline, with no API keys to share.
+
+- **TestCreator MCP** — `testcase-creator-mcp/` turns `data/vwo_5000_test_cases.csv` (5,000 tests, 17 modules) into **21 tools**: find tests by module/priority/type/browser/device, rank "what to run first", build smoke/sanity/regression suites, find duplicates and coverage gaps, write new tests in the catalog format, and export to CSV, Jira CSV, Markdown, JSON, Gherkin or Playwright stubs. Plus 4 resources, 3 prompts and 33 tests. Write tools stay hidden unless `TC_MCP_ALLOW_WRITE=true`, and edits go to an overlay file so the source CSV is never modified.
+- **TestSkill Finder MCP** — `testskill-finder-mcp/` searches a library of **100 QA agent skills** (the 7 STLC phases plus Playwright, Selenium, Cypress, API, performance, security, LLM evaluation, AI agents, MCP and automation) with **15 tools**, 103 prompts (one per skill) and 7 resources. 36 skills are synced from `PramodDutta/skillmasterclass`; 64 are new. 42 tests pin the golden searches.
+- **Built by prompting** — `00_Objective.md` sets the goal, `01_TestCreatorMCP.plan.md` is the plan (data profiling, tool catalog, ranking formula, suite rules, sharing options), and `02_prompt.md` records every prompt and what happened — including public Cloudflare hosting of the read-only server and its one-line stop switch.
+- **Connect** — stdio (`uv run --directory <path> tc-mcp`), local HTTP (`http://127.0.0.1:8000/mcp`), or `uvx` straight from git. Both servers run stateless behind proxies and tunnels, and show a "how to connect" page if opened in a browser.
 
 ---
 
